@@ -14,6 +14,7 @@ dependencies:
   sydneykit:
     git:
       url: 'http://ugitlab.com:2086/plugins/sydney-kit'
+      ref: 'boost3.0'
 
 dev_dependencies:
   flutter_test:
