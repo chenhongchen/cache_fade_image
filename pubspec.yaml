@@ -5,8 +5,8 @@ author:
 homepage:
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.22.0"
 
 dependencies:
   flutter:
@@ -14,7 +14,7 @@ dependencies:
   sydneykit:
     git:
       url: 'http://ugitlab.com:2086/plugins/sydney-kit'
-      ref: 'boost3.0'
+      ref: 'f2.2_b3'
 
 dev_dependencies:
   flutter_test:
