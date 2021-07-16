@@ -197,7 +197,7 @@ class CacheFadeImageState extends State<CacheFadeImage>
             _brightness == Brightness.dark)
         ? widget.darkPlaceholder
         : widget.placeholder;
-    if (widget._src.length <= 0) {
+    if (widget._src.length <= 0 || widget._src.indexOf('http') != 0) {
       return _buildPlaceholderWidget();
     }
     return ExtendedImage.network(
