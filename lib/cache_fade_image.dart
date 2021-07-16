@@ -11,31 +11,31 @@ export 'package:extended_image/extended_image.dart';
 class CacheFadeImage extends StatefulWidget {
   static bool isOpenDarkMode = true;
   CacheFadeImage.network(
-      this.src, {
-        Key key,
-        double scale = 1.0,
-        this.placeholder = '',
-        this.darkPlaceholder = '',
-        this.package,
-        this.enableFade = true,
-        this.fadeDuration,
-        this.cache = true,
-        this.semanticLabel,
-        this.excludeFromSemantics = false,
-        this.width,
-        this.height,
-        this.color,
-        this.colorBlendMode,
-        this.fit,
-        this.placeholderFit,
-        this.alignment = Alignment.center,
-        this.repeat = ImageRepeat.noRepeat,
-        this.centerSlice,
-        this.matchTextDirection = false,
-        this.gaplessPlayback = false,
-        this.filterQuality = FilterQuality.low,
-        Map<String, String> headers,
-      }) {
+    this.src, {
+    Key key,
+    double scale = 1.0,
+    this.placeholder = '',
+    this.darkPlaceholder = '',
+    this.package,
+    this.enableFade = true,
+    this.fadeDuration,
+    this.cache = true,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
+    this.width,
+    this.height,
+    this.color,
+    this.colorBlendMode,
+    this.fit,
+    this.placeholderFit,
+    this.alignment = Alignment.center,
+    this.repeat = ImageRepeat.noRepeat,
+    this.centerSlice,
+    this.matchTextDirection = false,
+    this.gaplessPlayback = false,
+    this.filterQuality = FilterQuality.low,
+    Map<String, String> headers,
+  }) {
     _src = (src ?? '').replaceAll(' ', '');
     _src = _src.replaceAll('//', '/');
     _src = _src.replaceFirst(':/', '://');
@@ -67,7 +67,7 @@ class CacheFadeImage extends StatefulWidget {
 
   static Future<Directory> diskCacheDir() async {
     Directory cacheImagesDirectory =
-    Directory(join((await getTemporaryDirectory()).path, "cacheimage"));
+        Directory(join((await getTemporaryDirectory()).path, "cacheimage"));
     return cacheImagesDirectory;
   }
 
@@ -114,7 +114,7 @@ class CacheFadeImageState extends State<CacheFadeImage>
 
   _hasDiskCache() async {
     Directory cacheImagesDirectory =
-    Directory(join((await getTemporaryDirectory()).path, "cacheimage"));
+        Directory(join((await getTemporaryDirectory()).path, "cacheimage"));
     //exist, try to find cache image file
     if (cacheImagesDirectory.existsSync()) {
       String md5Key = md5.convert(utf8.encode(widget._src ?? '')).toString();
@@ -133,16 +133,7 @@ class CacheFadeImageState extends State<CacheFadeImage>
     switch (state.extendedImageLoadState) {
       case LoadState.loading:
         _fadeController.reset();
-        return (_placeholder ?? '').length > 0
-            ? Image.asset(
-          _placeholder,
-          package: widget.package,
-          width: widget.width,
-          height: widget.height,
-          color: widget.color,
-          fit: widget.placeholderFit,
-        )
-            : Container();
+        return _buildPlaceholderWidget();
         break;
       case LoadState.completed:
         double opacity = 0.0;
@@ -181,29 +172,36 @@ class CacheFadeImageState extends State<CacheFadeImage>
         _fadeController.reset();
         //remove memory cached
         state.imageProvider.evict();
-        return (_placeholder ?? '').length > 0
-            ? Image.asset(
-          _placeholder,
-          package: widget.package,
-          width: widget.width,
-          height: widget.height,
-          color: widget.color,
-          fit: widget.placeholderFit,
-        )
-            : Container();
+        return _buildPlaceholderWidget();
         break;
     }
+  }
+
+  Widget _buildPlaceholderWidget() {
+    return (_placeholder ?? '').length > 0
+        ? Image.asset(
+            _placeholder,
+            package: widget.package,
+            width: widget.width,
+            height: widget.height,
+            color: widget.color,
+            fit: widget.placeholderFit,
+          )
+        : Container();
   }
 
   @override
   Widget build(BuildContext context) {
     _brightness = MediaQuery.of(context).platformBrightness;
     _placeholder = ((widget.darkPlaceholder?.length ?? 0) > 0 &&
-        _brightness == Brightness.dark)
+            _brightness == Brightness.dark)
         ? widget.darkPlaceholder
         : widget.placeholder;
+    if (widget._src.length <= 0) {
+      return _buildPlaceholderWidget();
+    }
     return ExtendedImage.network(
-      widget._src ?? '',
+      widget._src,
       width: widget.width,
       height: widget.height,
       color: widget.color,
