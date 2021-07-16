@@ -34,6 +34,7 @@ class CacheFadeImage extends StatefulWidget {
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
     this.filterQuality = FilterQuality.low,
+    Map<String, String>? headers,
   }) {
     _src = src.replaceAll(' ', '');
     _src = _src.replaceAll('//', '/');
@@ -78,19 +79,28 @@ class CacheFadeImage extends StatefulWidget {
 
 class CacheFadeImageState extends State<CacheFadeImage>
     with TickerProviderStateMixin {
-  late AnimationController _fadeController = AnimationController(
-      vsync: this,
-      duration: widget.fadeDuration == null
-          ? Duration(milliseconds: 333)
-          : widget.fadeDuration);
-  late CurvedAnimation _curved = CurvedAnimation(
-      parent: _fadeController, curve: Cubic(0.0, 0.0, 1.0, 0.0)); //曲线动画，动画插值，
+  late AnimationController _fadeController;
+  late CurvedAnimation _curved; //曲线动画，动画插值，
   bool _hasCache = true;
   String _placeholder = '';
   Brightness _brightness = Brightness.light;
 
   @override
   void initState() {
+//    _fade_controller = AnimationController(
+//        vsync: this,
+//        duration: widget.fadeDuration == null ? Duration(milliseconds: 333) : widget.fadeDuration,
+//        lowerBound: 0.0,
+//        upperBound: 1.0);
+
+    _fadeController = AnimationController(
+        vsync: this,
+        duration: widget.fadeDuration == null
+            ? Duration(milliseconds: 333)
+            : widget.fadeDuration);
+
+    _curved = new CurvedAnimation(
+        parent: _fadeController, curve: Cubic(0.0, 0.0, 1.0, 0.0));
     _hasDiskCache();
     super.initState();
   }
@@ -123,16 +133,8 @@ class CacheFadeImageState extends State<CacheFadeImage>
     switch (state.extendedImageLoadState) {
       case LoadState.loading:
         _fadeController.reset();
-        return _placeholder.length > 0
-            ? Image.asset(
-                _placeholder,
-                package: widget.package,
-                width: widget.width,
-                height: widget.height,
-                color: widget.color,
-                fit: widget.placeholderFit,
-              )
-            : Container();
+        return _buildPlaceholderWidget();
+
       case LoadState.completed:
         double opacity = 0.0;
         if (CacheFadeImage.isOpenDarkMode && (_brightness == Brightness.dark)) {
@@ -165,21 +167,26 @@ class CacheFadeImageState extends State<CacheFadeImage>
         } else {
           return rawImage;
         }
+
       default:
         _fadeController.reset();
         //remove memory cached
         state.imageProvider.evict();
-        return _placeholder.length > 0
-            ? Image.asset(
-                _placeholder,
-                package: widget.package,
-                width: widget.width,
-                height: widget.height,
-                color: widget.color,
-                fit: widget.placeholderFit,
-              )
-            : Container();
+        return _buildPlaceholderWidget();
     }
+  }
+
+  Widget _buildPlaceholderWidget() {
+    return _placeholder.length > 0
+        ? Image.asset(
+            _placeholder,
+            package: widget.package,
+            width: widget.width,
+            height: widget.height,
+            color: widget.color,
+            fit: widget.placeholderFit,
+          )
+        : Container();
   }
 
   @override
@@ -189,6 +196,9 @@ class CacheFadeImageState extends State<CacheFadeImage>
         (widget.darkPlaceholder.length > 0 && _brightness == Brightness.dark)
             ? widget.darkPlaceholder
             : widget.placeholder;
+    if (widget._src.length <= 0) {
+      return _buildPlaceholderWidget();
+    }
     return ExtendedImage.network(
       widget._src,
       width: widget.width,
