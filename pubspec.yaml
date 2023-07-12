@@ -5,17 +5,14 @@ author:
 homepage:
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.18.0 <3.0.0"
   flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  sydneykit:
-    git:
-      url: 'http://ugitlab.com:2086/plugins/sydney-kit'
-      ref: 'f3.0'
+  extended_image: ^8.0.2
 
 dev_dependencies:
   flutter_test:

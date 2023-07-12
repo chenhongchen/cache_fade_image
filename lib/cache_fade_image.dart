@@ -10,8 +10,9 @@ export 'package:extended_image/extended_image.dart';
 
 class CacheFadeImage extends StatefulWidget {
   static bool isOpenDarkMode = true;
+
   CacheFadeImage.network(
-    this.src, {
+    String src, {
     Key? key,
     double scale = 1.0,
     this.placeholder = '',
@@ -35,11 +36,10 @@ class CacheFadeImage extends StatefulWidget {
     this.gaplessPlayback = false,
     this.filterQuality = FilterQuality.low,
     Map<String, String>? headers,
-  }) {
-    _src = src.replaceAll(' ', '');
-    _src = _src.replaceAll('//', '/');
-    _src = _src.replaceFirst(':/', '://');
-  }
+  }) : src = src
+            .replaceAll(' ', '')
+            .replaceAll('//', '/')
+            .replaceFirst(':/', '://');
 
   final String src;
   final String placeholder;
@@ -63,7 +63,6 @@ class CacheFadeImage extends StatefulWidget {
   final String? semanticLabel;
   final bool excludeFromSemantics;
   final Alignment alignment;
-  String _src = '';
 
   static Future<Directory> diskCacheDir() async {
     Directory cacheImagesDirectory =
@@ -117,7 +116,7 @@ class CacheFadeImageState extends State<CacheFadeImage>
         Directory(join((await getTemporaryDirectory()).path, "cacheimage"));
     //exist, try to find cache image file
     if (cacheImagesDirectory.existsSync()) {
-      String md5Key = md5.convert(utf8.encode(widget._src)).toString();
+      String md5Key = md5.convert(utf8.encode(widget.src)).toString();
       File cacheFlie = File(join(cacheImagesDirectory.path, md5Key));
       if (cacheFlie.existsSync()) {
         _hasCache = true;
@@ -196,11 +195,11 @@ class CacheFadeImageState extends State<CacheFadeImage>
         (widget.darkPlaceholder.length > 0 && _brightness == Brightness.dark)
             ? widget.darkPlaceholder
             : widget.placeholder;
-    if (widget._src.length <= 0 || widget._src.indexOf('http') != 0) {
+    if (widget.src.length <= 0 || widget.src.indexOf('http') != 0) {
       return _buildPlaceholderWidget();
     }
     return ExtendedImage.network(
-      widget._src,
+      widget.src,
       width: widget.width,
       height: widget.height,
       color: widget.color,
