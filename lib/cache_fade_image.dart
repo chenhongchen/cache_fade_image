@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
@@ -111,14 +110,22 @@ class CacheFadeImageState extends State<CacheFadeImage>
     super.dispose();
   }
 
+  @override
+  didUpdateWidget(CacheFadeImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.src != widget.src) {
+      _hasDiskCache();
+    }
+  }
+
   _hasDiskCache() async {
     Directory cacheImagesDirectory =
         Directory(join((await getTemporaryDirectory()).path, "cacheimage"));
     //exist, try to find cache image file
     if (cacheImagesDirectory.existsSync()) {
       String md5Key = md5.convert(utf8.encode(widget.src)).toString();
-      File cacheFlie = File(join(cacheImagesDirectory.path, md5Key));
-      if (cacheFlie.existsSync()) {
+      File cacheFile = File(join(cacheImagesDirectory.path, md5Key));
+      if (cacheFile.existsSync()) {
         _hasCache = true;
       } else {
         _hasCache = false;
@@ -126,6 +133,7 @@ class CacheFadeImageState extends State<CacheFadeImage>
     } else {
       _hasCache = false;
     }
+    setState(() {});
   }
 
   Widget getImage(ExtendedImageState state) {
