@@ -12,10 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  sydneykit:
-    git:
-      url: 'http://ugitlab.com:2086/plugins/sydney-kit'
-      ref: 'f3.0'
+  extended_image: ^6.2.0
 
 dev_dependencies:
   flutter_test:

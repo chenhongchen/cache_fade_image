@@ -135,7 +135,9 @@ class CacheFadeImageState extends State<CacheFadeImage>
     } else {
       _hasCache = false;
     }
-    setState(() {});
+    if(mounted) {
+      setState(() {});
+    }
   }
 
   Widget getImage(ExtendedImageState state) {
